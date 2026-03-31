@@ -1,0 +1,20 @@
+{
+  "name": "desafio-api-cadastro-de-voos",
+  "version": "1.0.0",
+  "description": "API simples para cadastro de voos com validacoes detalhadas.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": [
+    "express",
+    "api",
+    "voos"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
