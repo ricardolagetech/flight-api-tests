@@ -23,6 +23,7 @@ module.exports = {
         tags: ['Voos'],
         summary: 'Cadastrar um voo',
         description: 'Cadastra um voo em memoria com validacoes de negocio.',
+        security: [{ basicAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -50,6 +51,24 @@ module.exports = {
           },
         },
         responses: {
+          '401': {
+            description: 'Credenciais ausentes ou inválidas.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ErroValidacao',
+                },
+                examples: {
+                  autenticacaoObrigatoria: {
+                    summary: 'Sem autenticacao',
+                    value: {
+                      mensagem: 'Autenticação obrigatória.',
+                    },
+                  },
+                },
+              },
+            },
+          },
           '201': {
             description: 'Voo cadastrado com sucesso.',
             content: {
@@ -90,7 +109,26 @@ module.exports = {
         tags: ['Voos'],
         summary: 'Listar voos',
         description: 'Retorna todos os voos cadastrados em memoria.',
+        security: [{ basicAuth: [] }],
         responses: {
+          '401': {
+            description: 'Credenciais ausentes ou inválidas.',
+            content: {
+              'application/json': {
+                schema: {
+                  $ref: '#/components/schemas/ErroValidacao',
+                },
+                examples: {
+                  credenciaisInvalidas: {
+                    summary: 'Credenciais invalidas',
+                    value: {
+                      mensagem: 'Credenciais inválidas.',
+                    },
+                  },
+                },
+              },
+            },
+          },
           '200': {
             description: 'Lista de voos retornada com sucesso.',
             content: {
@@ -109,6 +147,12 @@ module.exports = {
     },
   },
   components: {
+    securitySchemes: {
+      basicAuth: {
+        type: 'http',
+        scheme: 'basic',
+      },
+    },
     schemas: {
       NovoVoo: {
         type: 'object',

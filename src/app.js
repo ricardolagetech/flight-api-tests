@@ -5,11 +5,26 @@ const swaggerDocument = require('./swagger');
 const app = express();
 
 app.use(express.json());
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(
+  '/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  })
+);
 
 app.get('/docs.json', (_req, res) => {
   return res.status(200).json(swaggerDocument);
 });
+
+const apiUser = process.env.API_BASIC_USER;
+const apiPass = process.env.API_BASIC_PASS;
+
+if (!apiUser || !apiPass) {
+  throw new Error('API_BASIC_USER e API_BASIC_PASS precisam estar definidos.');
+}
 
 const voos = [];
 let nextId = 1;
@@ -44,6 +59,27 @@ function isValidDuration(value) {
 
 function isPositiveNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) && value > 0;
+}
+
+function validateBasicAuth(req, res, next) {
+  const authorization = req.headers.authorization;
+
+  if (!authorization || !authorization.startsWith('Basic ')) {
+    return res.status(401).json({ mensagem: 'Autenticação obrigatória.' });
+  }
+
+  const encodedCredentials = authorization.split(' ')[1];
+  const decodedCredentials = Buffer.from(encodedCredentials, 'base64').toString('utf8');
+  const separatorIndex = decodedCredentials.indexOf(':');
+
+  const username = separatorIndex >= 0 ? decodedCredentials.slice(0, separatorIndex) : '';
+  const password = separatorIndex >= 0 ? decodedCredentials.slice(separatorIndex + 1) : '';
+
+  if (username !== apiUser || password !== apiPass) {
+    return res.status(401).json({ mensagem: 'Credenciais inválidas.' });
+  }
+
+  return next();
 }
 
 function validateVoo(payload) {
@@ -90,7 +126,7 @@ function validateVoo(payload) {
   return null;
 }
 
-app.post('/voos', (req, res) => {
+app.post('/voos', validateBasicAuth, (req, res) => {
   const errorMessage = validateVoo(req.body);
 
   if (errorMessage) {
@@ -115,7 +151,7 @@ app.post('/voos', (req, res) => {
   return res.status(201).json(voo);
 });
 
-app.get('/voos', (_req, res) => {
+app.get('/voos', validateBasicAuth, (_req, res) => {
   return res.status(200).json(voos);
 });
 

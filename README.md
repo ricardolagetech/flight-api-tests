@@ -18,6 +18,33 @@ npm install
 npm start
 ```
 
+Para desenvolvimento local, crie um arquivo `.env` na raiz do projeto com base no `.env.example`:
+
+```env
+API_BASIC_USER=seu-usuario
+API_BASIC_PASS=sua-senha
+```
+
+Em ambiente de producao ou automacao futura, continue injetando as variaveis de ambiente no processo e nao versione o arquivo `.env`.
+
+Se preferir, ainda e possivel informar as variaveis manualmente antes de subir a API:
+
+```powershell
+$env:API_BASIC_USER="seu-usuario"
+$env:API_BASIC_PASS="sua-senha"
+npm start
+```
+
+Se as variaveis nao estiverem definidas, a API nao sobe.
+
+Exemplo de credenciais para uso apenas local:
+
+```powershell
+$env:API_BASIC_USER="interno"
+$env:API_BASIC_PASS="minha-senha-local"
+npm start
+```
+
 ## Swagger
 
 Com a aplicacao em execucao, a documentacao interativa fica disponivel em:
