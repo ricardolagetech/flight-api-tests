@@ -112,7 +112,7 @@ function validateVoo(payload) {
   }
 
   if (!isPositiveNumber(payload.milhas)) {
-    return 'Milhas deve ser um numero maior que zero.';
+    return 'Milhas deve ser um número maior que zero.';
   }
 
   if (
